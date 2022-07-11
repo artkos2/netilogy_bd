@@ -3,10 +3,9 @@ CREATE TABLE IF NOT EXISTS styles (
 	name VARCHAR(40) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS musicians (
+ TABLE IF NOT EXISTS musicians (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(40) NOT NULL,
-	year INTEGER NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS albums (
@@ -32,9 +31,9 @@ CREATE TABLE IF NOT EXISTS musicians_styles (
 
 );
 CREATE TABLE IF NOT EXISTS musicians_albums (
-	song_id INTEGER REFERENCES songs(id),
 	musician_id INTEGER REFERENCES musicians(id),
-	CONSTRAINT sa PRIMARY KEY (song_id, musician_id)
+	album_id INTEGER REFERENCES albums(id),
+	CONSTRAINT sa PRIMARY KEY (musician_id, album_id)
 
 );
 
