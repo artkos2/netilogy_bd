@@ -38,10 +38,12 @@ group by a.name
 
 
 --все исполнители, которые не выпустили альбомы в 2020 году;
-select m.name from musicians m 
-join musicians_albums ma on ma.musician_id = m.id 
-join albums a on a.id = ma.album_id 
-where a.year = 2020
+select m2.name  from musicians m2 
+where m2.id not in (
+            select m.id  from musicians m 
+            join musicians_albums ma on ma.musician_id = m.id
+            join albums a on a.id = ma.album_id 
+            where a.year = 2020)
 
 --названия сборников, в которых присутствует конкретный исполнитель (выберите сами);
 select c.name from collections c 
@@ -53,12 +55,12 @@ where m.name like '%Кино%'
 
 
 --название альбомов, в которых присутствуют исполнители более 1 жанра;
--- не смог понять как сделать, потогайте
-select * from albums a 
+select a.name  from albums a 
 join musicians_albums ma on ma.album_id = a.id 
 join musicians_styles ms on ms.musician_id = ma.musician_id 
 join styles s on s.id = ms.style_id 
-order by (s.id > 1)
+group by a.name
+having COUNT(s.id) > 1
 
 
 -- наименование треков, которые не входят в сборники;
@@ -73,6 +75,11 @@ join songs s on s.album_id = ma.album_id
 where s.duration = (select min(s2.duration) from songs s2)
 
 --название альбомов, содержащих наименьшее количество треков.
--- похожая проблема, не пойму как считать количество
-select * from albums a 
-join songs s on s.album_id = a.id
+select a.name from albums a 
+join songs s on a.id = s.album_id 
+group by a.name
+having count(a.name) = (select count(*) from albums a 
+            join songs s on s.album_id = a.id
+            GROUP BY a.id
+            order by count(*) asc 
+            limit 1)
